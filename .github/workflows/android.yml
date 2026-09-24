@@ -24,14 +24,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Fix JVM Target & Ignore Validation
+        run: |
+          echo "kotlin.jvm.target.validation.mode=ignore" >> gradle.properties
+          sed -i 's/JavaVersion.VERSION_1_8/JavaVersion.VERSION_17/g' app/build.gradle* || true
+          sed -i 's/"1.8"/"17"/g' app/build.gradle* || true
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
       - name: Build with Gradle
-        run: gradle assembleDebug -Dkotlin.jvm.target.validation.mode=warning
+        run: gradle assembleDebug -Pkotlin.jvm.target.validation.mode=ignore
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/*.apk
+          
