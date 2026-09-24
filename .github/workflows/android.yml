@@ -30,10 +30,8 @@ jobs:
           sed -i 's/JavaVersion.VERSION_1_8/JavaVersion.VERSION_17/g' app/build.gradle* || true
           sed -i 's/"1.8"/"17"/g' app/build.gradle* || true
           
-          # Fix singleLine issue completely across all kotlin and java files
-          grep -rl "singleLine" . | xargs sed -i 's/\.singleLine = true/\.isSingleLine = true/g' || true
-          grep -rl "singleLine" . | xargs sed -i 's/\.singleLine = false/\.isSingleLine = false/g' || true
-          grep -rl "singleLine" . | xargs sed -i 's/\.singleLine/\.isSingleLine/g' || true
+          # Fix any occurrence of singleLine across the whole source tree
+          find . -type f \( -name "*.kt" -o -name "*.java" \) -exec sed -i 's/singleLine/isSingleLine/g' {} + || true
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -46,4 +44,3 @@ jobs:
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/*.apk
-          
