@@ -29,8 +29,11 @@ jobs:
           echo "kotlin.jvm.target.validation.mode=ignore" >> gradle.properties
           sed -i 's/JavaVersion.VERSION_1_8/JavaVersion.VERSION_17/g' app/build.gradle* || true
           sed -i 's/"1.8"/"17"/g' app/build.gradle* || true
-          find app/src/main/java -name "*.kt" -exec sed -i 's/\.singleLine = true/\.isSingleLine = true/g' {} + || true
-          find app/src/main/java -name "*.kt" -exec sed -i 's/\.singleLine/\.isSingleLine/g' {} + || true
+          
+          # Fix singleLine issue completely across all kotlin and java files
+          grep -rl "singleLine" . | xargs sed -i 's/\.singleLine = true/\.isSingleLine = true/g' || true
+          grep -rl "singleLine" . | xargs sed -i 's/\.singleLine = false/\.isSingleLine = false/g' || true
+          grep -rl "singleLine" . | xargs sed -i 's/\.singleLine/\.isSingleLine/g' || true
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
